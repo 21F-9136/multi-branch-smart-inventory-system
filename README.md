@@ -1,59 +1,313 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🚀 Multi-Branch Smart Inventory & Order Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Enterprise-level Multi-Branch Smart Inventory & Order Management System built using Laravel (Backend) and Vue 3 (Frontend).
 
-## About Laravel
+This project was developed as part of a Full Stack Engineering Technical Assignment to demonstrate backend-focused engineering thinking including:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Clean Architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Service Layer Implementation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Database Integrity
 
-## Learning Laravel
+Concurrency Handling
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Role-Based Access Control
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Transaction Management
 
-## Laravel Sponsors
+Structured Frontend Design
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+🏗 1. System Architecture Overview
 
-### Premium Partners
+The system follows a Layered Modular Monolith Architecture:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Client (Vue 3 SPA)
+        ↓
+API Layer (Laravel REST API + Sanctum)
+        ↓
+Application Layer (Thin Controllers + Service Layer)
+        ↓
+Domain Layer (Eloquent Models)
+        ↓
+Database Layer (MySQL - InnoDB)
+        ↓
+Optional Cache Layer (File / Redis Ready)
+Backend Principles
 
-## Contributing
+Thin Controllers
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Fat Service Layer
 
-## Code of Conduct
+Transaction-based Order Processing
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Row-level locking for concurrency
 
-## Security Vulnerabilities
+Composite indexing for performance
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Strict role-based route protection
 
-## License
+🧩 2. Technology Stack
+Backend
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Laravel (Latest Version)
+
+MySQL (InnoDB)
+
+Laravel Sanctum
+
+RESTful API Design
+
+Database Transactions
+
+Frontend
+
+Vue 3 (Composition API)
+
+Component-Based Architecture
+
+API-based SPA approach
+
+Clean State Management
+
+👥 3. Role-Based Access Control
+
+Implemented roles:
+
+Super Admin
+
+Branch Manager
+
+Sales User
+
+Access is restricted via:
+
+Custom Role Middleware
+
+Route Protection
+
+Controller Authorization
+
+Branch-based data filtering
+
+🗄 4. Database Schema Overview
+
+Main Entities:
+
+roles
+
+users
+
+branches
+
+products
+
+inventories
+
+stock_movements
+
+orders
+
+order_items
+
+Key Design Decisions
+
+SKU is unique
+
+Inventory stored per branch per product
+
+Orders follow Header + Line pattern
+
+Reserved quantity column prevents overselling
+
+Composite indexes added for reporting performance
+
+🔐 5. Concurrency Handling Strategy (Critical Section)
+
+To prevent overselling:
+
+Order creation is wrapped inside a database transaction
+
+Inventory rows are locked using lockForUpdate()
+
+Stock validation occurs after acquiring row-level lock
+
+If stock is insufficient → transaction rolls back
+
+Reserved quantity system prevents double selling
+
+Negative inventory is strictly prevented
+
+This ensures:
+
+ACID compliance
+
+No race conditions
+
+No overselling
+
+Safe concurrent order processing
+
+📦 6. Inventory Module
+
+Supports:
+
+Add Stock
+
+Adjust Stock
+
+Transfer Between Branches
+
+Stock Movement History
+
+Low Stock Indicator
+
+Inventory can never go negative.
+
+🛒 7. Order Processing
+
+Multi-product order creation
+
+Automatic subtotal calculation
+
+Tax calculation
+
+Grand total calculation
+
+Secure stock deduction
+
+Transaction-safe implementation
+
+📊 8. Reporting Dashboard
+
+Per branch dashboard includes:
+
+Total Sales (Today)
+
+Total Sales (This Month)
+
+Total Orders Count
+
+Top 5 Selling Products
+
+Low Stock Products
+
+Optimized using indexing for performance.
+
+📂 9. Folder Structure Explanation
+app/
+ ├── Http/Controllers/Api
+ ├── Services
+ ├── Models
+ ├── Middleware
+database/
+ ├── migrations
+ ├── seeders
+resources/js/
+ ├── views
+ ├── components
+ ├── router
+
+Architecture ensures:
+
+Business logic inside Services
+
+Controllers remain clean
+
+Reusable Vue components
+
+Clear separation of concerns
+
+⚙ 10. Installation Guide
+1. Clone Repository
+git clone https://github.com/21F-9136/multi-branch-smart-inventory-system.git
+2. Install Dependencies
+composer install
+npm install
+3. Setup Environment
+cp .env.example .env
+php artisan key:generate
+
+Update database credentials inside .env.
+
+4. Run Migrations & Seeders
+php artisan migrate --seed
+5. Run Server
+php artisan serve
+npm run dev
+🔑 11. Sample Login Credentials
+
+(After seeding)
+
+Super Admin:
+
+email: admin@example.com
+password: password
+
+Branch Manager:
+
+email: manager@example.com
+password: password
+
+Sales User:
+
+email: sales@example.com
+password: password
+🛡 12. Security Measures
+
+Role-based route protection
+
+Input validation
+
+Mass assignment protection
+
+Proper HTTP status codes
+
+Transaction-based operations
+
+No sensitive data committed (.env ignored)
+
+📈 13. Scalability Considerations
+
+For production scaling:
+
+Add Redis for caching dashboards
+
+Introduce read replicas for reporting
+
+Use queue system for heavy operations
+
+Horizontal scaling with load balancer
+
+Separate reporting DB for analytics
+
+⚠ 14. Known Limitations
+
+No distributed lock implementation (single DB instance)
+
+No advanced analytics engine
+
+UI kept functional over decorative
+
+🧠 Engineering Focus
+
+This project emphasizes:
+
+Data Integrity
+
+Concurrency Control
+
+Clean Architecture
+
+Backend-Centric System Thinking
+
+Production-Ready Engineering Practices
+
+📌 Submission
+
+GitHub Repository:
+https://github.com/21F-9136/multi-branch-smart-inventory-system
+
+🏁 Conclusion
+
+This system demonstrates backend-focused full stack engineering with structured architecture, transaction safety, and scalable design thinking.
