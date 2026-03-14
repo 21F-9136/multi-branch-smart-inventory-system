@@ -1,313 +1,313 @@
-🚀 Multi-Branch Smart Inventory & Order Management System
+# Multi-Branch Smart Inventory & Order Management System
 
-Enterprise-level Multi-Branch Smart Inventory & Order Management System built using Laravel (Backend) and Vue 3 (Frontend).
+A backend-focused full-stack project that simulates how a real multi-branch inventory and order management system could be built in a production environment.
 
-This project was developed as part of a Full Stack Engineering Technical Assignment to demonstrate backend-focused engineering thinking including:
+The goal of this project was not just to build CRUD features, but to demonstrate **engineering practices used in real systems**, such as transaction safety, concurrency handling, modular architecture, and scalable database design.
 
-Clean Architecture
+The application is built using **Laravel for the backend** and **Vue 3 for the frontend**, following a clean layered architecture that separates business logic from controllers and data access.
 
-Service Layer Implementation
+---
 
-Database Integrity
+# System Overview
 
-Concurrency Handling
+The system allows organizations with multiple branches to manage:
 
-Role-Based Access Control
+* Products and SKUs
+* Inventory per branch
+* Stock movements
+* Order processing
+* Role-based user access
+* Operational reporting dashboards
 
-Transaction Management
+Each branch operates independently while still being managed centrally by administrators.
 
-Structured Frontend Design
+---
 
-🏗 1. System Architecture Overview
+# Architecture
 
-The system follows a Layered Modular Monolith Architecture:
+The project follows a **Layered Modular Monolith Architecture**, which keeps the codebase maintainable while still allowing future scalability.
 
 Client (Vue 3 SPA)
-        ↓
-API Layer (Laravel REST API + Sanctum)
-        ↓
-Application Layer (Thin Controllers + Service Layer)
-        ↓
+↓
+Laravel API Layer (REST + Sanctum)
+↓
+Application Layer (Controllers + Services)
+↓
 Domain Layer (Eloquent Models)
-        ↓
-Database Layer (MySQL - InnoDB)
-        ↓
-Optional Cache Layer (File / Redis Ready)
-Backend Principles
+↓
+Database Layer (MySQL InnoDB)
 
-Thin Controllers
+Key architectural principles used:
 
-Fat Service Layer
+* Thin Controllers
+* Business Logic inside Service Classes
+* Transaction-safe operations
+* Strict separation of concerns
+* Role-based authorization
 
-Transaction-based Order Processing
+---
 
-Row-level locking for concurrency
+# Technology Stack
 
-Composite indexing for performance
+### Backend
 
-Strict role-based route protection
+* Laravel (latest version)
+* MySQL (InnoDB engine)
+* Laravel Sanctum authentication
+* RESTful API design
+* Database transactions
 
-🧩 2. Technology Stack
-Backend
+### Frontend
 
-Laravel (Latest Version)
+* Vue 3 (Composition API)
+* Component-based UI
+* API-driven SPA architecture
+* Modular and reusable components
 
-MySQL (InnoDB)
+---
 
-Laravel Sanctum
+# Role Based Access Control
 
-RESTful API Design
+The system defines three roles:
 
-Database Transactions
+**Super Admin**
 
-Frontend
+* Manage all branches
+* Manage users
+* Access all system modules
 
-Vue 3 (Composition API)
+**Branch Manager**
 
-Component-Based Architecture
+* Manage inventory within a specific branch
+* View branch reports
+* Manage branch orders
 
-API-based SPA approach
+**Sales User**
 
-Clean State Management
+* Create and manage orders
+* View product listings
+* Limited operational access
 
-👥 3. Role-Based Access Control
+Access is enforced through middleware and route-level authorization.
 
-Implemented roles:
+---
 
-Super Admin
+# Database Design
 
-Branch Manager
+The database schema is designed to support multi-branch operations while maintaining strict data integrity.
 
-Sales User
+Core entities include:
 
-Access is restricted via:
+* roles
+* users
+* branches
+* products
+* inventories
+* stock_movements
+* orders
+* order_items
 
-Custom Role Middleware
+Important design decisions:
 
-Route Protection
+* SKU values are unique per product
+* Inventory is stored per **branch + product**
+* Orders follow a **header / line item structure**
+* Composite indexes improve reporting performance
+* Inventory constraints prevent negative stock
 
-Controller Authorization
+---
 
-Branch-based data filtering
+# Concurrency & Data Integrity
 
-🗄 4. Database Schema Overview
+Handling concurrent order requests safely was one of the main engineering goals of this project.
 
-Main Entities:
+Order processing is implemented using **database transactions and row-level locking**.
 
-roles
+Key steps during order creation:
 
-users
+1. A database transaction is started
+2. Inventory rows are locked using `lockForUpdate()`
+3. Stock availability is validated
+4. Order and order items are created
+5. Inventory quantities are updated
+6. The transaction commits
 
-branches
-
-products
-
-inventories
-
-stock_movements
-
-orders
-
-order_items
-
-Key Design Decisions
-
-SKU is unique
-
-Inventory stored per branch per product
-
-Orders follow Header + Line pattern
-
-Reserved quantity column prevents overselling
-
-Composite indexes added for reporting performance
-
-🔐 5. Concurrency Handling Strategy (Critical Section)
-
-To prevent overselling:
-
-Order creation is wrapped inside a database transaction
-
-Inventory rows are locked using lockForUpdate()
-
-Stock validation occurs after acquiring row-level lock
-
-If stock is insufficient → transaction rolls back
-
-Reserved quantity system prevents double selling
-
-Negative inventory is strictly prevented
+If stock is insufficient, the transaction is rolled back.
 
 This ensures:
 
-ACID compliance
+* ACID-compliant operations
+* No race conditions
+* No overselling
+* Consistent inventory state
 
-No race conditions
+---
 
-No overselling
+# Inventory Management
 
-Safe concurrent order processing
+The inventory module supports:
 
-📦 6. Inventory Module
+* Adding stock
+* Adjusting stock levels
+* Transferring stock between branches
+* Viewing stock movement history
+* Identifying low stock items
 
-Supports:
+Inventory levels are strictly controlled and **cannot become negative**.
 
-Add Stock
+---
 
-Adjust Stock
+# Order Processing
 
-Transfer Between Branches
+Orders support multiple products within a single transaction.
 
-Stock Movement History
+Features include:
 
-Low Stock Indicator
+* Multi-item order creation
+* Automatic subtotal calculation
+* Tax and total computation
+* Secure inventory deduction
+* Transaction-safe processing
 
-Inventory can never go negative.
+---
 
-🛒 7. Order Processing
+# Reporting Dashboard
 
-Multi-product order creation
+Each branch has access to an operational dashboard showing:
 
-Automatic subtotal calculation
+* Total sales today
+* Total sales for the month
+* Total order count
+* Top selling products
+* Low stock alerts
 
-Tax calculation
+Queries are optimized using indexes to maintain performance as data grows.
 
-Grand total calculation
+---
 
-Secure stock deduction
+# Project Structure
 
-Transaction-safe implementation
+Backend structure:
 
-📊 8. Reporting Dashboard
-
-Per branch dashboard includes:
-
-Total Sales (Today)
-
-Total Sales (This Month)
-
-Total Orders Count
-
-Top 5 Selling Products
-
-Low Stock Products
-
-Optimized using indexing for performance.
-
-📂 9. Folder Structure Explanation
 app/
- ├── Http/Controllers/Api
- ├── Services
- ├── Models
- ├── Middleware
+
+* Http/Controllers
+* Services
+* Models
+* Middleware
+
 database/
- ├── migrations
- ├── seeders
+
+* migrations
+* seeders
+
+Frontend structure:
+
 resources/js/
- ├── views
- ├── components
- ├── router
 
-Architecture ensures:
+* views
+* components
+* router
 
-Business logic inside Services
+This structure keeps controllers lightweight and moves business logic into reusable service classes.
 
-Controllers remain clean
+---
 
-Reusable Vue components
+# Installation
 
-Clear separation of concerns
+### Clone the repository
 
-⚙ 10. Installation Guide
-1. Clone Repository
-git clone https://github.com/21F-9136/multi-branch-smart-inventory-system.git
-2. Install Dependencies
+git clone https://github.com/Aisha-Zahid/multi-branch-smart-inventory-system.git
+
+### Install dependencies
+
 composer install
 npm install
-3. Setup Environment
+
+### Configure environment
+
 cp .env.example .env
+
+Update your database credentials in `.env`.
+
+Generate application key:
+
 php artisan key:generate
 
-Update database credentials inside .env.
+### Run migrations and seeders
 
-4. Run Migrations & Seeders
 php artisan migrate --seed
-5. Run Server
+
+### Start the development servers
+
 php artisan serve
 npm run dev
-🔑 11. Sample Login Credentials
 
-(After seeding)
+---
 
-Super Admin:
+# Demo Credentials
 
-email: admin@example.com
-password: password
+After running seeders, the following accounts are available:
 
-Branch Manager:
+Super Admin
+email: [admin@erp.com](mailto:admin@example.com)
+password: 123456
 
-email: manager@example.com
-password: password
+Branch Manager
+email: [manager@erp.com](mailto:manager@example.com)
+password: 123456
 
-Sales User:
+Sales User
+email: [sales@erp.com](mailto:sales@example.com)
+password: 123456
 
-email: sales@example.com
-password: password
-🛡 12. Security Measures
+---
 
-Role-based route protection
+# Security Considerations
 
-Input validation
+* Role-based route protection
+* Input validation
+* Mass assignment protection
+* Transaction-safe data operations
+* Sensitive environment variables excluded from repository
 
-Mass assignment protection
+---
 
-Proper HTTP status codes
+# Scalability Considerations
 
-Transaction-based operations
+Although built as a modular monolith, the system is designed with scalability in mind.
 
-No sensitive data committed (.env ignored)
+Possible production improvements include:
 
-📈 13. Scalability Considerations
+* Redis caching for dashboards
+* Queue workers for background tasks
+* Read replicas for heavy reporting
+* Horizontal scaling behind a load balancer
+* Dedicated analytics database
 
-For production scaling:
+---
 
-Add Redis for caching dashboards
+# Known Limitations
 
-Introduce read replicas for reporting
+* Designed for a single database instance
+* No distributed locking mechanism
+* Reporting module is basic and operational-focused
 
-Use queue system for heavy operations
+---
 
-Horizontal scaling with load balancer
+# Engineering Focus
 
-Separate reporting DB for analytics
+This project focuses on backend engineering principles such as:
 
-⚠ 14. Known Limitations
+* Data integrity
+* Concurrency control
+* Transaction safety
+* Clean architecture
+* Maintainable system design
 
-No distributed lock implementation (single DB instance)
+---
 
-No advanced analytics engine
+# Author
 
-UI kept functional over decorative
-
-🧠 Engineering Focus
-
-This project emphasizes:
-
-Data Integrity
-
-Concurrency Control
-
-Clean Architecture
-
-Backend-Centric System Thinking
-
-Production-Ready Engineering Practices
-
-📌 Submission
-
-GitHub Repository:
-https://github.com/21F-9136/multi-branch-smart-inventory-system
-
-🏁 Conclusion
-
-This system demonstrates backend-focused full stack engineering with structured architecture, transaction safety, and scalable design thinking.
+Aisha Zahid
+Computer Scientist | Software Developer 
